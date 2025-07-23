@@ -121,6 +121,11 @@ sudo bash scripts/05-verify-lamp.sh
 
 Then open in browser:  
 ```
-http://<your-server-ip>/info.php
+http://<server-ip>/info.php
 ```
 
+---
+
+## License
+
+MIT © Furqan Imtiaz
