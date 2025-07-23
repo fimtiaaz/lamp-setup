@@ -1,105 +1,126 @@
+# CentOS 7 LAMP Stack Setup
 
-
-This sets up a complete LAMP (Linux, Apache, MariaDB, PHP) environment on a CentOS 7 virtual machine. It's ideal for running PHP-based web applications in a local or lab setup.
+This project sets up a LAMP (Linux, Apache, MariaDB, PHP) environment on a CentOS 7 virtual machine using Bash automation scripts. Each step is modularized and easy to follow. Ideal for home lab practice, server provisioning, or learning Linux server management.
 
 ---
 
 ## Prerequisites
 
-- CentOS 7 Virtual Machine (Minimal Install)
-- Bridged network with working internet
-- YUM configured to use `vault.centos.org`
-- Guest Additions installed (for folder sharing, if needed)
-- Root or sudo privileges
+- CentOS 7 Minimal Install VM  
+- Bridged network with working internet  
+- `yum` repos configured to use `vault.centos.org`  
+- Root or sudo privileges  
+- Guest Additions installed (for folder sharing, optional)  
 
 ---
 
 ## Project Structure
 
-centos7-lamp-setup/
-├── README.md
-└── scripts/
-├── 01-static-dns.sh
-├── 02-install-apache.sh
-├── 03-install-mariadb.sh
-├── 04-install-php.sh
-└── 05-verify-lamp.sh
+```
+centos7-lamp-setup/  
+├── README.md  
+└── scripts/  
+    ├── 01-static-dns.sh  
+    ├── 02-install-apache.sh  
+    ├── 03-install-mariadb.sh  
+    ├── 04-install-php.sh  
+    └── 05-verify-lamp.sh  
+```
 
 ---
 
 ## Setup Instructions
 
+---
+
 ### 1. Configure Static DNS (Optional)
 
-Run:
+Sets Google and Cloudflare DNS resolvers for your CentOS VM and locks `/etc/resolv.conf` to prevent overrides.
 
+🔧 What it does:
+- Edits `/etc/sysconfig/network-scripts/ifcfg-enp0s3`
+- Updates `/etc/resolv.conf`
+- Locks DNS config using `chattr +i`
+
+**Run:**
 ```bash
 sudo bash scripts/01-static-dns.sh
-This sets Google and Cloudflare DNS resolvers:
+```
 
-Edits /etc/sysconfig/network-scripts/ifcfg-enp0s3
-
-Updates /etc/resolv.conf
-
-Locks DNS config using chattr +i /etc/resolv.conf
+---
 
 ### 2. Install Apache HTTP Server
-Run:
 
-sudo bash scripts/02-install-apache.sh
+Installs and enables Apache (`httpd`) and opens HTTP (port 80) in the firewall.
 
 What it does:
+- Installs `httpd`
+- Enables & starts the service
+- Opens port 80 in firewalld
 
-Installs httpd
+**Run:**
+```bash
+sudo bash scripts/02-install-apache.sh
+```
 
-Enables and starts the Apache service
-
-Opens HTTP (port 80) in the firewall
+---
 
 ### 3. Install MariaDB (MySQL)
-Run:
 
+Installs the MariaDB database server and walks you through securing it with a guided script.
+
+🔧 What it does:
+- Installs `mariadb-server`
+- Enables & starts the service
+
+**Run:**
+```bash
 sudo bash scripts/03-install-mariadb.sh
+```
 
-Then manually run the secure setup:
-
+Then run the secure installer:
+```bash
 sudo mysql_secure_installation
+```
 
 Recommended responses:
+- Set root password → Y  
+- Remove anonymous users → N  
+- Disallow root login remotely → N  
+- Remove test database → N  
+- Reload privilege tables → N  
 
-Set root password: Y
-
-Remove anonymous users: N
-
-Disallow root login remotely: N
-
-Remove test database: N
-
-Reload privileges: N
+---
 
 ### 4. Install PHP
-Run:
 
+Installs PHP and the MySQL PHP module, then restarts Apache.
+
+What it does:
+- Installs `php` and `php-mysql`
+- Restarts Apache
+
+**Run:**
+```bash
 sudo bash scripts/04-install-php.sh
+```
 
-This installs:
+---
 
-PHP
+### 5. Verify LAMP Setup
 
-php-mysql (for MariaDB connectivity)
+Creates a PHP info file to confirm PHP is processed by Apache.
 
-Then restarts Apache to load PHP support
+What it does:
+- Creates `/var/www/html/info.php`
 
-###5. Verify LAMP Setup
-Run:
-
+**Run:**
+```bash
 sudo bash scripts/05-verify-lamp.sh
+```
 
-Creates the PHP test file:
-<?php phpinfo(); ?>
-
-Accessible at:
-http://192.168.8.171/info.php
-
-If the PHP page loads, your LAMP stack is working!
+Then open in browser:  
+```
+http://<your-server-ip>/info.php
+```
 
